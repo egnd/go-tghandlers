@@ -1,0 +1,4 @@
+/gen
+/vendor
+/coverage.*
+.DS_Store
