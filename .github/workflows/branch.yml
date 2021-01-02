@@ -12,7 +12,7 @@ jobs:
   alpine-image:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+      # - run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
       - run: docker pull $IMG_ALPINE
       - run: docker tag $IMG_ALPINE $REGISTRY_PREFIX/$IMG_ALPINE
       - run: docker images
@@ -20,7 +20,7 @@ jobs:
   golang-image:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+      # - run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
       - uses: actions/checkout@v2
       - run: docker pull $REGISTRY_PREFIX/$IMG_GOLANG || echo "no image"
       - run: docker build --tag=$REGISTRY_PREFIX/$IMG_GOLANG --target=env --build-arg BASE_IMG=$IMG_GOLANG --cache-from=$REGISTRY_PREFIX/$IMG_GOLANG .
