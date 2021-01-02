@@ -21,13 +21,13 @@ jobs:
   todos:
     runs-on: ubuntu-latest
     continue-on-error: true
-    needs: [alpine-image, golang-image]
+    needs: [golang-image]
     steps:
       - uses: actions/checkout@v2
       - run: if grep -rni '@to\do:'; then exit 1; fi
   conflicts:
     runs-on: ubuntu-latest
-    needs: [alpine-image, golang-image]
+    needs: [golang-image]
     steps:
       - uses: actions/checkout@v2
       - run: if grep -rni '^<<<\<<<< '; then exit 1; fi
@@ -36,7 +36,7 @@ jobs:
   gitflow:
     runs-on: ubuntu-latest
     if: "!contains(github.ref, 'master')"
-    needs: [alpine-image, golang-image]
+    needs: [golang-image]
     steps:
       - uses: actions/checkout@v2
       - run: git remote update
