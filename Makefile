@@ -1,13 +1,10 @@
 #!make
 
-include .env
-export
-
 MAKEFLAGS += --always-make
 
 PACKAGES=./pkg/...
 APP_BASE_IMAGE=golang:1.15-alpine
-APP_ENV_IMAGE=docker.pkg.github.com/egnd/go-tghandler/golang:1.15-alpine-env
+APP_ENV_IMAGE=docker.pkg.github.com/egnd/go-tghandler/golang:1.15-alpine
 
 .PHONY: help
 
