@@ -23,7 +23,7 @@ lint: ## Lint source code
 	golangci-lint run --color=always --config=.golangci.yml $(PACKAGES)
 
 docker-lint:
-	docker run --rm -t --volume $$(pwd):/src:rw $(APP_ENV_IMAGE) make lint
+	docker run --rm -t --volume $$(pwd):/src:rw --entrypoint make $(APP_ENV_IMAGE) lint
 	@echo "Success"
 
 test: mocks ## Test source code
@@ -32,7 +32,7 @@ test: mocks ## Test source code
 	go tool cover -func=coverage.out
 
 docker-test:
-	docker run --rm -t --volume $$(pwd):/src:rw $(APP_ENV_IMAGE) make test
+	docker run --rm -t --volume $$(pwd):/src:rw --entrypoint make $(APP_ENV_IMAGE) test
 	@echo "Success, read report at file://$$(pwd)/coverage.html"
 
 mocks: ## Generate mocks
@@ -40,14 +40,14 @@ mocks: ## Generate mocks
 	mockery --all --case=underscore --recursive --outpkg=mocks --output=gen/mocks --dir=pkg
 
 docker-mocks:
-	docker run --rm -t --volume $$(pwd):/src:rw $(APP_ENV_IMAGE) make mocks
+	docker run --rm -t --volume $$(pwd):/src:rw --entrypoint make $(APP_ENV_IMAGE) mocks
 	@echo "Success"
 
 vendor: ## Resolve dependencies
 	go mod tidy
 
 docker-vendor:
-	docker run --rm -t --volume $$(pwd):/src:rw $(APP_ENV_IMAGE) make vendor
+	docker run --rm -t --volume $$(pwd):/src:rw --entrypoint make $(APP_ENV_IMAGE) vendor
 	@echo "Success"
 
 owner: ## Reset folder owner
