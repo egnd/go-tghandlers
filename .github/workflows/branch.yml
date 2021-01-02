@@ -12,12 +12,12 @@ jobs:
   alpine-image:
     runs-on: ubuntu-latest
     steps:
-      # - uses: azure/docker-login@v1
-      #   with:
-      #     login-server: $REGISTRY_URL
-      #     username: $GITHUB_ACTOR
-      #     password: ${{ secrets.GHCR_TOKEN }}
-      - run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+      - uses: azure/docker-login@v1
+        with:
+          login-server: $REGISTRY_URL
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_TOKEN }}
+      # - run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
       - run: docker pull $IMG_ALPINE
       - run: docker tag $IMG_ALPINE $REGISTRY_PREFIX/$IMG_ALPINE
       - run: docker images
@@ -28,7 +28,7 @@ jobs:
       - uses: azure/docker-login@v1
         with:
           login-server: $REGISTRY_URL
-          username: $GITHUB_ACTOR
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_TOKEN }}
       - uses: actions/checkout@v2
       - run: docker pull $REGISTRY_PREFIX/$IMG_GOLANG || echo "no image"
@@ -41,8 +41,8 @@ jobs:
     container: 
       image: $REGISTRY_PREFIX/$IMG_ALPINE
       credentials:
-        username: $GITHUB_ACTOR
-        password: ${{ secrets.GITHUB_TOKEN}}
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GHCR_TOKEN }}
     continue-on-error: true
     needs: [alpine-image, golang-image]
     steps:
@@ -54,8 +54,8 @@ jobs:
     container: 
       image: $REGISTRY_PREFIX/$IMG_ALPINE
       credentials:
-        username: $GITHUB_ACTOR
-        password: ${{ secrets.GITHUB_TOKEN}}
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GHCR_TOKEN }}
     needs: [alpine-image, golang-image]
     steps:
       - uses: actions/checkout@v2
@@ -68,8 +68,8 @@ jobs:
     container: 
       image: $REGISTRY_PREFIX/$IMG_ALPINE
       credentials:
-        username: $GITHUB_ACTOR
-        password: ${{ secrets.GITHUB_TOKEN}}
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GHCR_TOKEN }}
     if: "!contains(github.ref, 'master')"
     needs: [alpine-image, golang-image]
     steps:
@@ -83,8 +83,8 @@ jobs:
     container: 
       image: $REGISTRY_PREFIX/$IMG_GOLANG
       credentials:
-        username: $GITHUB_ACTOR
-        password: ${{ secrets.GITHUB_TOKEN}}
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GHCR_TOKEN }}
     needs: [todos, conflicts, gitflow]
     steps:
       - uses: actions/checkout@v2
@@ -95,8 +95,8 @@ jobs:
     container: 
       image: $REGISTRY_PREFIX/$IMG_GOLANG
       credentials:
-        username: $GITHUB_ACTOR
-        password: ${{ secrets.GITHUB_TOKEN}}
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GHCR_TOKEN }}
     needs: [todos, conflicts, gitflow]
     steps:
       - uses: actions/checkout@v2
