@@ -29,6 +29,7 @@ docker-lint:
 test: mocks ## Test source code
 	go test -mod=readonly -cover -covermode=count -coverprofile=coverage.out $(PACKAGES)
 	go tool cover -html=coverage.out -o coverage.html
+	go tool cover -func=coverage.out
 
 docker-test:
 	docker run --rm -t --volume $$(pwd):/src:rw $(APP_ENV_IMAGE) make test

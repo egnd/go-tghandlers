@@ -6,17 +6,8 @@ on:
 env:
   REGISTRY_URL: ghcr.io
   REGISTRY_PREFIX: ghcr.io/${{github.repository}}
-  IMG_ALPINE: alpine:3.12
   IMG_GOLANG: golang:1.15-alpine
 jobs:
-  alpine-image:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "${{ secrets.ghcr_token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-      - run: docker pull $IMG_ALPINE
-      - run: docker tag $IMG_ALPINE $REGISTRY_PREFIX/$IMG_ALPINE
-      - run: docker images
-      - run: docker push $REGISTRY_PREFIX/$IMG_ALPINE
   golang-image:
     runs-on: ubuntu-latest
     steps:
@@ -29,66 +20,39 @@ jobs:
   
   todos:
     runs-on: ubuntu-latest
-    container: 
-      image: $REGISTRY_PREFIX/$IMG_ALPINE
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.ghcr_token }}
     continue-on-error: true
     needs: [alpine-image, golang-image]
     steps:
       - uses: actions/checkout@v2
-      - run: apk add -q git grep
       - run: if grep -rni '@to\do:'; then exit 1; fi
   conflicts:
     runs-on: ubuntu-latest
-    container: 
-      image: $REGISTRY_PREFIX/$IMG_ALPINE
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.ghcr_token }}
     needs: [alpine-image, golang-image]
     steps:
       - uses: actions/checkout@v2
-      - run: apk add -q git grep
       - run: if grep -rni '^<<<\<<<< '; then exit 1; fi
       - run: if grep -rni '^===\====$'; then exit 1; fi
       - run: if grep -rni '^>>>\>>>> '; then exit 1; fi
   gitflow:
     runs-on: ubuntu-latest
-    container: 
-      image: $REGISTRY_PREFIX/$IMG_ALPINE
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.ghcr_token }}
     if: "!contains(github.ref, 'master')"
     needs: [alpine-image, golang-image]
     steps:
       - uses: actions/checkout@v2
-      - run: apk add -q git grep
       - run: git remote update
       - run: if ! git log --pretty=format:'%H' | grep $(git log --pretty=format:'%H' -n 1 origin/master); then exit 1; fi
 
   unit-tests:
     runs-on: ubuntu-latest
-    container: 
-      image: $REGISTRY_PREFIX/$IMG_GOLANG
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.ghcr_token }}
     needs: [todos, conflicts, gitflow]
     steps:
       - uses: actions/checkout@v2
-      - run: make test
-      - run: go tool cover -func=coverage.out
+      - run: echo "${{ secrets.ghcr_token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - run: make docker-test APP_ENV_IMAGE=$REGISTRY_PREFIX/$IMG_GOLANG
   linting:
     runs-on: ubuntu-latest
-    container: 
-      image: $REGISTRY_PREFIX/$IMG_GOLANG
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.ghcr_token }}
     needs: [todos, conflicts, gitflow]
     steps:
       - uses: actions/checkout@v2
-      - run: make lint
+      - run: echo "${{ secrets.ghcr_token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - run: make docker-lint APP_ENV_IMAGE=$REGISTRY_PREFIX/$IMG_GOLANG
