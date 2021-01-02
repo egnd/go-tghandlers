@@ -12,11 +12,12 @@ jobs:
   alpine-image:
     runs-on: ubuntu-latest
     steps:
-      - uses: azure/docker-login@v1
-        with:
-          login-server: $REGISTRY_URL
-          username: $GITHUB_ACTOR
-          password: ${{ secrets.GHCR_TOKEN }}
+      # - uses: azure/docker-login@v1
+      #   with:
+      #     login-server: $REGISTRY_URL
+      #     username: $GITHUB_ACTOR
+      #     password: ${{ secrets.GHCR_TOKEN }}
+      - run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
       - run: docker pull $IMG_ALPINE
       - run: docker tag $IMG_ALPINE $REGISTRY_PREFIX/$IMG_ALPINE
       - run: docker images
