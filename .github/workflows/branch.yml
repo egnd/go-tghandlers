@@ -1,0 +1,101 @@
+name: push branch updates
+on: 
+  push: 
+    branches:
+     - '*'
+env:
+  REGISTRY_PREFIX: docker.pkg.github.com/${{github.repository}}
+  IMG_ALPINE: alpine:3.12
+  IMG_GOLANG: golang:1.15-alpine
+jobs:
+  alpine-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/docker-login@v1
+        with:
+          login-server: docker.pkg.github.com
+          username: $GITHUB_ACTOR
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - run: docker pull $IMG_ALPINE
+      - run: docker tag $IMG_ALPINE $REGISTRY_PREFIX/$IMG_ALPINE
+      - run: docker images
+      - run: docker push $REGISTRY_PREFIX/$IMG_ALPINE
+  golang-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/docker-login@v1
+        with:
+          login-server: docker.pkg.github.com
+          username: $GITHUB_ACTOR
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
+      - run: docker pull $REGISTRY_PREFIX/$IMG_GOLANG || echo "no image"
+      - run: docker build --tag=$REGISTRY_PREFIX/$IMG_GOLANG --target=env --build-arg BASE_IMG=$IMG_GOLANG --cache-from=$REGISTRY_PREFIX/$IMG_GOLANG .
+      - run: docker images
+      - run: docker push $REGISTRY_PREFIX/$IMG_GOLANG
+  
+  todos:
+    runs-on: ubuntu-latest
+    container: 
+      image: $REGISTRY_PREFIX/$IMG_ALPINE
+      credentials:
+        username: $GITHUB_ACTOR
+        password: ${{ secrets.GITHUB_TOKEN}}
+    continue-on-error: true
+    needs: [alpine-image, golang-image]
+    steps:
+      - uses: actions/checkout@v2
+      - run: apk add -q git grep
+      - run: if grep -rni '@to\do:'; then exit 1; fi
+  conflicts:
+    runs-on: ubuntu-latest
+    container: 
+      image: $REGISTRY_PREFIX/$IMG_ALPINE
+      credentials:
+        username: $GITHUB_ACTOR
+        password: ${{ secrets.GITHUB_TOKEN}}
+    needs: [alpine-image, golang-image]
+    steps:
+      - uses: actions/checkout@v2
+      - run: apk add -q git grep
+      - run: if grep -rni '^<<<\<<<< '; then exit 1; fi
+      - run: if grep -rni '^===\====$'; then exit 1; fi
+      - run: if grep -rni '^>>>\>>>> '; then exit 1; fi
+  gitflow:
+    runs-on: ubuntu-latest
+    container: 
+      image: $REGISTRY_PREFIX/$IMG_ALPINE
+      credentials:
+        username: $GITHUB_ACTOR
+        password: ${{ secrets.GITHUB_TOKEN}}
+    if: "!contains(github.ref, 'master')"
+    needs: [alpine-image, golang-image]
+    steps:
+      - uses: actions/checkout@v2
+      - run: apk add -q git grep
+      - run: git remote update
+      - run: if ! git log --pretty=format:'%H' | grep $(git log --pretty=format:'%H' -n 1 origin/master); then exit 1; fi
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    container: 
+      image: $REGISTRY_PREFIX/$IMG_GOLANG
+      credentials:
+        username: $GITHUB_ACTOR
+        password: ${{ secrets.GITHUB_TOKEN}}
+    needs: [todos, conflicts, gitflow]
+    steps:
+      - uses: actions/checkout@v2
+      - run: make test
+      - run: go tool cover -func=coverage.out
+  gitflow:
+    runs-on: ubuntu-latest
+    container: 
+      image: $REGISTRY_PREFIX/$IMG_GOLANG
+      credentials:
+        username: $GITHUB_ACTOR
+        password: ${{ secrets.GITHUB_TOKEN}}
+    needs: [todos, conflicts, gitflow]
+    steps:
+      - uses: actions/checkout@v2
+      - run: make lint
