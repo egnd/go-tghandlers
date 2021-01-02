@@ -4,44 +4,36 @@ on:
     branches:
      - '*'
 env:
-  REGISTRY_URL: docker.pkg.github.com
-  REGISTRY_PREFIX: docker.pkg.github.com/${{github.repository}}/tghandler-
+  REGISTRY_URL: ghcr.io
+  REGISTRY_PREFIX: ghcr.io/${{github.repository}}/tghandler-
   IMG_ALPINE: alpine:3.12
   IMG_GOLANG: golang:1.15-alpine
 jobs:
   alpine-image:
     runs-on: ubuntu-latest
     steps:
-      - uses: azure/docker-login@v1
-        with:
-          login-server: $REGISTRY_URL
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      - run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
       - run: docker pull $IMG_ALPINE
-      - run: docker tag $IMG_ALPINE $REGISTRY_PREFIX$IMG_ALPINE
+      - run: docker tag $IMG_ALPINE $REGISTRY_PREFIX/$IMG_ALPINE
       - run: docker images
-      - run: docker push $REGISTRY_PREFIX$IMG_ALPINE
+      - run: docker push $REGISTRY_PREFIX/$IMG_ALPINE
   golang-image:
     runs-on: ubuntu-latest
     steps:
-      - uses: azure/docker-login@v1
-        with:
-          login-server: $REGISTRY_URL
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      - run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
       - uses: actions/checkout@v2
-      - run: docker pull $REGISTRY_PREFIX$IMG_GOLANG || echo "no image"
-      - run: docker build --tag=$REGISTRY_PREFIX$IMG_GOLANG --target=env --build-arg BASE_IMG=$IMG_GOLANG --cache-from=$REGISTRY_PREFIX$IMG_GOLANG .
+      - run: docker pull $REGISTRY_PREFIX/$IMG_GOLANG || echo "no image"
+      - run: docker build --tag=$REGISTRY_PREFIX/$IMG_GOLANG --target=env --build-arg BASE_IMG=$IMG_GOLANG --cache-from=$REGISTRY_PREFIX/$IMG_GOLANG .
       - run: docker images
-      - run: docker push $REGISTRY_PREFIX$IMG_GOLANG
+      - run: docker push $REGISTRY_PREFIX/$IMG_GOLANG
   
   todos:
     runs-on: ubuntu-latest
     container: 
-      image: $REGISTRY_PREFIX$IMG_ALPINE
+      image: $REGISTRY_PREFIX/$IMG_ALPINE
       credentials:
         username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.CR_PAT }}
     continue-on-error: true
     needs: [alpine-image, golang-image]
     steps:
@@ -51,10 +43,10 @@ jobs:
   conflicts:
     runs-on: ubuntu-latest
     container: 
-      image: $REGISTRY_PREFIX$IMG_ALPINE
+      image: $REGISTRY_PREFIX/$IMG_ALPINE
       credentials:
         username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.CR_PAT }}
     needs: [alpine-image, golang-image]
     steps:
       - uses: actions/checkout@v2
@@ -65,10 +57,10 @@ jobs:
   gitflow:
     runs-on: ubuntu-latest
     container: 
-      image: $REGISTRY_PREFIX$IMG_ALPINE
+      image: $REGISTRY_PREFIX/$IMG_ALPINE
       credentials:
         username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.CR_PAT }}
     if: "!contains(github.ref, 'master')"
     needs: [alpine-image, golang-image]
     steps:
@@ -80,10 +72,10 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     container: 
-      image: $REGISTRY_PREFIX$IMG_GOLANG
+      image: $REGISTRY_PREFIX/$IMG_GOLANG
       credentials:
         username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.CR_PAT }}
     needs: [todos, conflicts, gitflow]
     steps:
       - uses: actions/checkout@v2
@@ -92,10 +84,10 @@ jobs:
   linting:
     runs-on: ubuntu-latest
     container: 
-      image: $REGISTRY_PREFIX$IMG_GOLANG
+      image: $REGISTRY_PREFIX/$IMG_GOLANG
       credentials:
         username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.CR_PAT }}
     needs: [todos, conflicts, gitflow]
     steps:
       - uses: actions/checkout@v2
