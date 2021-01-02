@@ -5,7 +5,7 @@ on:
      - '*'
 env:
   REGISTRY_URL: ghcr.io
-  REGISTRY_PREFIX: ${{REGISTRY_URL}}/${{github.repository}}
+  REGISTRY_PREFIX: ghcr.io/${{github.repository}}
   IMG_ALPINE: alpine:3.12
   IMG_GOLANG: golang:1.15-alpine
 jobs:
