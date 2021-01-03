@@ -51,9 +51,9 @@ func main() {
 		func(next listener.EventHandler) listener.EventHandler {
 			return func(ctx context.Context,
 				update tgbotapi.Update, lggr listener.ILogger) {
-                response := tgbotapi.NewMessage(update.Message.Chat.ID, 
-                    "Hello, world!",
-                )
+				response := tgbotapi.NewMessage(update.Message.Chat.ID,
+					"Hello, world!",
+				)
 				response.ReplyToMessageID = update.Message.MessageID
 
 				if _, err = api.Send(response); err != nil {
