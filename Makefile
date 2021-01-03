@@ -15,7 +15,7 @@ help:
 
 ########################################################################################################################
 
-lint: ## Lint source code
+lint: vendor ## Lint source code
 	golangci-lint run --color=always --config=.golangci.yml ./pkg/...
 
 docker-lint:
@@ -40,7 +40,7 @@ docker-mocks:
 	@echo "Success"
 
 vendor: ## Resolve dependencies
-	go mod tidy
+	go mod vendor
 
 docker-vendor:
 	docker run --rm -t --volume $$(pwd):/src:rw --entrypoint make $(GOLANG_IMAGE) vendor
