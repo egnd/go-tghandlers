@@ -7,17 +7,20 @@ import (
 	"go.uber.org/zap"
 )
 
+// Listener is struct which is listening and handling events.
 type Listener struct {
 	decorators map[EventType][]EventHandlerDecorator
 	handlers   map[EventType]EventHandler
 }
 
+// NewListener constructor for Listener struct.
 func NewListener() *Listener {
 	return &Listener{
 		decorators: make(map[EventType][]EventHandlerDecorator),
 	}
 }
 
+// Add adds decorators for handling specific Telegram event.
 func (b *Listener) Add(eType EventType, decorators ...EventHandlerDecorator) {
 	if _, ok := b.decorators[eType]; !ok {
 		b.decorators[eType] = []EventHandlerDecorator{}
@@ -60,6 +63,7 @@ func (b *Listener) defineType(update tgbotapi.Update) (typeCode EventType) {
 	return
 }
 
+// Listen starts listening incoming messages in channel.
 func (b *Listener) Listen(ctx context.Context,
 	updChan tgbotapi.UpdatesChannel,
 	api ITgAPI,

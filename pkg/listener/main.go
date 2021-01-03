@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// ILogger is interface for logger instance.
 type ILogger interface {
 	Info(string, ...zap.Field)
 	Warn(string, ...zap.Field)
@@ -17,6 +18,7 @@ type ILogger interface {
 	With(...zap.Field) *zap.Logger
 }
 
+// ITgAPI is interface for Telegram API instance.
 type ITgAPI interface {
 	GetUpdatesChan(tgbotapi.UpdateConfig) (tgbotapi.UpdatesChannel, error)
 	Send(tgbotapi.Chattable) (tgbotapi.Message, error)
@@ -26,8 +28,11 @@ type ITgAPI interface {
 	AnswerInlineQuery(tgbotapi.InlineConfig) (tgbotapi.APIResponse, error)
 }
 
+// EventHandler is telegram event handler callback interface.
 type EventHandler func(context.Context, tgbotapi.Update, ILogger)
 
+// EventHandlerDecorator is decorator interface for EventHandler, which provides handlers chaining ability.
 type EventHandlerDecorator func(EventHandler) EventHandler
 
+// ChainWrapper is callback interface for building chain of handlers from slice of decorators.
 type ChainWrapper func([]EventHandlerDecorator, ChainWrapper) EventHandler

@@ -1,4 +1,4 @@
-// Package ui ...
+// Package ui contains helpers for Telegram UI controls creation
 package ui
 
 import (
@@ -9,6 +9,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
+// NewInlineButton returns inline keyboard with single button.
 func NewInlineButton(title string, data string) tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
@@ -17,12 +18,13 @@ func NewInlineButton(title string, data string) tgbotapi.InlineKeyboardMarkup {
 	)
 }
 
+// KeybItem is a single keyboard button struct.
 type KeybItem struct {
 	Key   string
 	Value string
 }
 
-// NewInlineKeyboard is ...
+// NewInlineKeyboard returns inline keyboard with multiple buttons and pagination.
 // @TODO: fix nolint.
 func NewInlineKeyboard( //nolint:funlen
 	command string,
