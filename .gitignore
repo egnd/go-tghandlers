@@ -1,4 +1,5 @@
 /gen
 /vendor
 /coverage.*
+/main.go
 .DS_Store
