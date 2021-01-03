@@ -1,7 +1,6 @@
 # Telegram chained events handler
 
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/egnd/go-tghandlers)](https://pkg.go.dev/github.com/egnd/go-tghandlers?tab=doc)
-[![GoDoc](https://godoc.org/github.com/egnd/go-tghandlers?status.svg)](https://pkg.go.dev/github.com/egnd/go-tghandlers)
 [![Go Report Card](https://goreportcard.com/badge/github.com/egnd/go-tghandlers)](https://goreportcard.com/report/github.com/egnd/go-tghandlers)
 [![codecov.io](https://codecov.io/github/egnd/go-tghandlers/coverage.svg?branch=master)](https://codecov.io/gh/egnd/go-tghandlers?branch=master)
 [![Build](https://github.com/egnd/go-tghandlers/workflows/change-branch/badge.svg)](https://github.com/egnd/go-tghandlers/actions?query=branch%3Amaster)
