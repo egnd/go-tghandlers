@@ -48,11 +48,13 @@ func (b *Listener) buildHandlers() {
 func (b *Listener) defineType(update tgbotapi.Update) (typeCode EventType) {
 	switch {
 	case update.Message != nil:
-		typeCode = EventPrivateMessage
+		typeCode = EventDirectMessage
 	case update.InlineQuery != nil:
 		typeCode = EventInlineQuery
 	case update.CallbackQuery != nil:
 		typeCode = EventCallbackQuery
+	default:
+		typeCode = EventUndefined
 	}
 
 	return
@@ -84,7 +86,7 @@ func (b *Listener) Listen(ctx context.Context,
 			continue
 		}
 
-		handler(context.WithValue(ctx, ctxEventType, eType), update, eventLogger)
+		handler(context.WithValue(ctx, CtxEventType, eType), update, eventLogger)
 	}
 
 	return

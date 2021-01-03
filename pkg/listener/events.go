@@ -4,15 +4,15 @@ type EventType int
 
 const (
 	EventUndefined EventType = iota
-	EventPrivateMessage
+	EventDirectMessage
 	EventInlineQuery
 	EventCallbackQuery
 )
 
 func GetEventName(eventID EventType) string {
 	switch eventID {
-	case EventPrivateMessage:
-		return "private_message"
+	case EventDirectMessage:
+		return "direct_message"
 	case EventInlineQuery:
 		return "inline_query"
 	case EventCallbackQuery:

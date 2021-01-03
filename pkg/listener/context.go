@@ -7,9 +7,9 @@ import (
 type ctxKeyType int
 
 const (
-	ctxEventType ctxKeyType = iota
+	CtxEventType ctxKeyType = iota
 )
 
 func GetEventTypeFromCtx(ctx context.Context) EventType {
-	return ctx.Value(ctxEventType).(EventType)
+	return ctx.Value(CtxEventType).(EventType)
 }

@@ -45,7 +45,7 @@ func main() {
 	bot := listener.NewListener()
 
 	// set handlers
-	bot.Add(listener.EventPrivateMessage,
+	bot.Add(listener.EventDirectMessage,
 		handlers.AppendLogWithMessage,
 		handlers.LogIncoming,
 		func(next listener.EventHandler) listener.EventHandler {
