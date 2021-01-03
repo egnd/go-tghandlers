@@ -1,5 +1,5 @@
 ARG BASE_IMG=golang:1.15-alpine
-FROM ${BASE_IMG} as env
+FROM ${BASE_IMG}
 ENV TZ Europe/Moscow
 ENV GOPROXY https://proxy.golang.org,direct
 ENV GOSUMDB off
