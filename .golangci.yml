@@ -18,7 +18,6 @@ linters:
   enable-all: true
   fast: false
   disable:
-    - golint # @TODO:
     - goerr113 # @TODO:
 issues:
   exclude-use-default: false

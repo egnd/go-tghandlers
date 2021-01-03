@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: echo "${{ secrets.ghcr_token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-      - run: docker run --rm --volume $(pwd):/src:rw --entrypoint go $REGISTRY_PREFIX/$IMG_GOLANG test -race -coverprofile=coverage.txt -covermode=atomic ./pkg/...
+      - run: docker run --rm --volume $(pwd):/src:rw $REGISTRY_PREFIX/$IMG_GOLANG make codecov
       - run: bash <(curl -s https://codecov.io/bash)
   linting:
     runs-on: ubuntu-latest

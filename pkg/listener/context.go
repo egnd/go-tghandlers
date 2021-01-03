@@ -7,9 +7,11 @@ import (
 type ctxKeyType int
 
 const (
-	ctxEventType ctxKeyType = iota
+	// CtxEventType context key for storing event type ID.
+	CtxEventType ctxKeyType = iota
 )
 
+// GetEventTypeFromCtx return event ID from context struct.
 func GetEventTypeFromCtx(ctx context.Context) EventType {
-	return ctx.Value(ctxEventType).(EventType)
+	return ctx.Value(CtxEventType).(EventType)
 }
