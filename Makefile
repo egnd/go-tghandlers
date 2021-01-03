@@ -51,7 +51,7 @@ owner: ## Reset folder owner
 	@echo "All is OK"
 
 image-golang: ## Build golang env image
-	docker build --build-arg BASE_IMG=$(GOLANG_BASE_IMAGE) --tag=$(GOLANG_IMAGE) --file=golang.Dockerfile build
+	docker build --build-arg BASE_IMG=$(GOLANG_BASE_IMAGE) --tag=$(GOLANG_IMAGE) --file=build/golang.Dockerfile build
 
 check-conflicts: ## Find git conflicts
 	@if grep -rn '^<<<\<<<< ' .; then exit 1; fi
