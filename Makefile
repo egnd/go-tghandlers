@@ -15,7 +15,7 @@ help:
 
 ########################################################################################################################
 
-lint: vendor ## Lint source code
+lint: mocks vendor ## Lint source code
 	golangci-lint run --color=always --config=.golangci.yml ./pkg/...
 
 docker-lint:
