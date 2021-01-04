@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/egnd/go-tghandlers/gen/mocks"
+	"github.com/egnd/go-tghandlers/mocks"
 	"github.com/egnd/go-tghandlers/pkg/listener"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/stretchr/testify/assert"

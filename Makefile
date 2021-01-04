@@ -15,18 +15,18 @@ help:
 
 ########################################################################################################################
 
-lint: mocks vendor ## Lint source code
+lint: vendor ## Lint source code
 	golangci-lint run --color=always --config=.golangci.yml ./pkg/...
 
 docker-lint:
 	docker run --rm -t --volume $$(pwd):/src:rw --entrypoint make $(GOLANG_IMAGE) lint
 	@echo "All is OK"
 
-codecov: mocks
+codecov:
 #	CGO_ENABLED=1 go test -race -coverprofile=coverage.txt -covermode=atomic ./pkg/... @TODO:
 	CGO_ENABLED=1 go test -coverprofile=coverage.txt -covermode=atomic ./pkg/...
 
-test: mocks ## Test source code
+test: ## Test source code
 	go test -mod=readonly -cover -covermode=count -coverprofile=coverage.out ./pkg/...
 	go tool cover -html=coverage.out -o coverage.html
 	go tool cover -func=coverage.out
@@ -36,8 +36,8 @@ docker-test:
 	@echo "Detailed report at file://$$(pwd)/coverage.html"
 
 mocks: ## Generate mocks
-	@rm -rf gen/mocks && mkdir -p gen/mocks
-	mockery --all --case=underscore --recursive --outpkg=mocks --output=gen/mocks --dir=pkg
+	@rm -rf mocks && mkdir -p mocks
+	mockery --all --case=underscore --recursive --outpkg=mocks --output=mocks --dir=pkg
 
 docker-mocks:
 	docker run --rm -t --volume $$(pwd):/src:rw --entrypoint make $(GOLANG_IMAGE) mocks
